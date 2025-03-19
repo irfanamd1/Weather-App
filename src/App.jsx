@@ -34,7 +34,6 @@ const App = () => {
       setLoading(true);
       setInput('');
       const data = await axios.get(`https://api.openweathermap.org/data/2.5/weather?units=metric&q=${input}&appid=${import.meta.env.VITE_OPEN_WEATHER_MAP_API}`);
-      console.log(data);
       setResponse(data.data);
       setLoading(false);
     } catch (error) {
