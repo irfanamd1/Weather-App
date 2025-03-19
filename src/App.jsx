@@ -41,6 +41,7 @@ const App = () => {
   };
 
   const getLocation = () => {
+    setLoading(true);
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
@@ -48,7 +49,6 @@ const App = () => {
           setCords({ latitude, longitude });
   
           try {
-            setLoading(true);
             const data = await axios.get(
               `https://api.openweathermap.org/data/2.5/weather?units=metric&lat=${latitude}&lon=${longitude}&appid=${import.meta.env.VITE_OPEN_WEATHER_MAP_API}`
             );
@@ -72,8 +72,6 @@ const App = () => {
       );
     } else {
       setLoading(false);
-      console.log('errpr');
-      
       toast.error("Geolocation is not supported by this browser.");
     }
   };
