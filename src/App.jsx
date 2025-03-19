@@ -85,10 +85,13 @@ const App = () => {
     <div className='w-[300px] h-[460px] bg-gradient-to-r from-[#141e30] to-[#243b55] rounded-md absolute top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%]'>
       {
         selectBtn &&
-        <div className='absolute top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] flex justify-center gap-4 w-72 text-white border py-2 rounded-md'>
-          <button onClick={ () => { setSearchByName(true), setSelectBtn(false) } } className='border-r pr-2'>Search by Name</button>
-          <button onClick={ () => { setSearchByLocation(true), setSelectBtn(false) } } >Search by Location</button>
-      </div>
+        <>
+          <div className='absolute top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] flex justify-center gap-4 w-72 text-white border py-2 rounded-md'>
+            <button onClick={ () => { setSearchByName(true), setSelectBtn(false) } } className='border-r pr-2'>Search by Name</button>
+            <button onClick={ () => { setSearchByLocation(true), setSelectBtn(false) } } >Search by Location</button>
+          </div>
+          <p className='text-white absolute bottom-1 left-2 animate-pulse'>By, Irfan Ahamed S</p>
+        </>
       }
       {
         searchByName &&
