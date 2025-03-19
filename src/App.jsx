@@ -26,8 +26,11 @@ const App = () => {
 
   const [loading, setLoading] = useState(false);
 
+  const [error, setError] = useState('');
+
   const handleChange = async () => {
     try {
+      setResponse(null);
       setLoading(true);
       setInput('');
       const data = await axios.get(`https://api.openweathermap.org/data/2.5/weather?units=metric&q=${input}&appid=${import.meta.env.VITE_OPEN_WEATHER_MAP_API}`);
@@ -37,10 +40,12 @@ const App = () => {
     } catch (error) {
       setLoading(false);
       toast.error('Error fetching weather data');
+      setError("Enter a valid location and try again");
     }
   };
 
   const getLocation = () => {
+    setResponse(null);
     setLoading(true);
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -52,17 +57,18 @@ const App = () => {
             const data = await axios.get(
               `https://api.openweathermap.org/data/2.5/weather?units=metric&lat=${latitude}&lon=${longitude}&appid=${import.meta.env.VITE_OPEN_WEATHER_MAP_API}`
             );
-            console.log(data);
             setResponse(data.data);
             setLoading(false);
           } catch (error) {
-            console.log(error); 
             toast.error("Error fetching weather data");
             setLoading(false);
+            setError("Please try again");
           }
         },
         (error) => {
-          toast.error(`Geolocation error: ${error.message}`);
+          setLoading(false);
+          toast.error('Turn your Location On');
+          setError("Turn your Location before trying");
         },
         {
           enableHighAccuracy: true,
@@ -73,6 +79,7 @@ const App = () => {
     } else {
       setLoading(false);
       toast.error("Geolocation is not supported by this browser.");
+      setError("Geolocation is not supported by this browser.");
     }
   };
   
@@ -84,7 +91,8 @@ const App = () => {
     setSearchByLocation(false), 
     setResponse(null),
     setInput(''),
-    setLoading(false)
+    setLoading(false),
+    setError("");
   }  
 
   return (
@@ -125,7 +133,7 @@ const App = () => {
           </div>
         :
         <div>
-          {response && (
+          {response ? (
             <div className='text-center'>
                 <img className='w-32 mx-auto relative' src={ `https://openweathermap.org/img/wn/${ response.weather[0].icon }@2x.png` } alt="" />
                 <p className=' text-xl font-bold text-gray-400'>{response.weather[0].description.toUpperCase()}</p>
@@ -153,7 +161,13 @@ const App = () => {
                   </div>
                 </div>
             </div>
-          )}
+          ) :
+          <div className='absolute top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%] w-full'>
+            {
+              error && <p className='text-slate-200 text-center'>{ error }</p>
+            }
+          </div>
+        }
         </div>
       }
     </div>
