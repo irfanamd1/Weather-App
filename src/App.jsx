@@ -7,6 +7,7 @@ import { FaArrowCircleLeft } from "react-icons/fa";
 import { MdOutlineMyLocation } from "react-icons/md";
 import toast from 'react-hot-toast';
 import { TbLoader3 } from "react-icons/tb";
+import Loader from './Loader';
 
 const App = () => {
   const [input, setInput] = useState('');
@@ -29,17 +30,21 @@ const App = () => {
   const [error, setError] = useState('');
 
   const handleChange = async () => {
+    if (!input.trim()) {
+      toast.error("Please enter a city name");
+      return;
+    }
     try {
       setResponse(null);
       setLoading(true);
       setInput('');
       const data = await axios.get(`https://api.openweathermap.org/data/2.5/weather?units=metric&q=${input}&appid=${import.meta.env.VITE_OPEN_WEATHER_MAP_API}`);
       setResponse(data.data);
-      setLoading(false);
     } catch (error) {
-      setLoading(false);
       toast.error('Error fetching weather data');
       setError("Enter a valid location and try again");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -51,23 +56,25 @@ const App = () => {
         async (position) => {
           const { latitude, longitude } = position.coords;
           setCords({ latitude, longitude });
+          console.log(latitude, longitude);
+          
   
           try {
             const data = await axios.get(
               `https://api.openweathermap.org/data/2.5/weather?units=metric&lat=${latitude}&lon=${longitude}&appid=${import.meta.env.VITE_OPEN_WEATHER_MAP_API}`
             );
             setResponse(data.data);
-            setLoading(false);
           } catch (error) {
             toast.error("Error fetching weather data");
-            setLoading(false);
             setError("Please try again");
+          } finally {
+            setLoading(false);
           }
         },
         (error) => {
           setLoading(false);
-          toast.error('Turn your Location On');
-          setError("Turn your Location On before trying");
+          toast.error("Please turn on your location");
+          setError("Please turn on your location before trying again");
         },
         {
           enableHighAccuracy: true,
@@ -81,8 +88,6 @@ const App = () => {
       setError("Geolocation is not supported by this browser.");
     }
   };
-  
-  
 
   const clear = () => {
     setSelectBtn(true), 
@@ -91,7 +96,7 @@ const App = () => {
     setResponse(null),
     setInput(''),
     setLoading(false),
-    setError("");
+    setError('');
   }  
 
   const handleSubmit = (e) => {
@@ -119,7 +124,7 @@ const App = () => {
           <>
             <form onSubmit={ handleSubmit } className='flex w-[280px] border rounded-full bg-gradient-to-r from-[#232526] to-[#414345] px-4 py-2 mt-10 mx-auto'>
               <input className='w-full outline-none px-2 bg-transparent placeholder:text-gray-500 text-white' type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder="Enter city name" />
-              <button><FaSearch className='text-white' /></button>
+              <button type="submit" aria-label="Search city"><FaSearch className='text-white' /></button>
             </form>
             <FaArrowCircleLeft onClick={ clear } className='text-xl text-gray-300 mt-4 ml-6 cursor-pointer' />
           </>
@@ -135,14 +140,14 @@ const App = () => {
         }
         {
           loading ? 
-            <div className='absolute top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%]'>
-              <TbLoader3 className='animate-spin text-4xl text-slate-300' />
+            <div>
+              <Loader />
             </div>
           :
           <div>
             {response ? (
               <div className='text-center'>
-                  <img className='w-32 mx-auto relative' src={ `https://openweathermap.org/img/wn/${ response.weather[0].icon }@2x.png` } alt="" />
+                  <img className='w-32 mx-auto relative' src={ `https://openweathermap.org/img/wn/${ response.weather[0].icon }@2x.png` } alt="Weather Icon" />
                   <p className=' text-xl font-bold text-gray-400'>{response.weather[0].description.toUpperCase()}</p>
                   <p className='text-4xl font-bold mt-3 text-white'>{Math.floor(response.main.temp)}°C</p>
                   <p className='text-gray-400 mt-2 font-semibold'>Feels Like {Math.floor(response.main.feels_like)}°C</p>
