@@ -67,7 +67,7 @@ const App = () => {
         (error) => {
           setLoading(false);
           toast.error('Turn your Location On');
-          setError("Turn your on Location before trying");
+          setError("Turn your Location On before trying");
         },
         {
           enableHighAccuracy: true,
@@ -94,6 +94,11 @@ const App = () => {
     setError("");
   }  
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    handleChange();
+  }
+
   return (
     <div className='bg-gradient-to-r from-[#141e30] to-[#243b55] w-full h-[100vh]'>
       <div className='w-[320px] h-[480px] bg-gradient-to-r from-[#232526] to-[#414345] shadow-xl rounded-md absolute top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%]'>
@@ -112,10 +117,10 @@ const App = () => {
         {
           searchByName &&
           <>
-            <div className='flex w-[280px] border rounded-full bg-gradient-to-r from-[#232526] to-[#414345] px-4 py-2 mt-10 mx-auto'>
+            <form onSubmit={ handleSubmit } className='flex w-[280px] border rounded-full bg-gradient-to-r from-[#232526] to-[#414345] px-4 py-2 mt-10 mx-auto'>
               <input className='w-full outline-none px-2 bg-transparent placeholder:text-gray-500 text-white' type="text" value={input} onChange={(e) => setInput(e.target.value)} placeholder="Enter city name" />
-              <button onClick={handleChange}><FaSearch className='text-white' /></button>
-            </div>
+              <button><FaSearch className='text-white' /></button>
+            </form>
             <FaArrowCircleLeft onClick={ clear } className='text-xl text-gray-300 mt-4 ml-6 cursor-pointer' />
           </>
         }
